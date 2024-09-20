@@ -1,47 +1,22 @@
 const SHELLTYPES = ['simple', 'split', 'burst', 'double', 
                     'mega', 'writer', 'pent', 'comet'];
 const GRAVITY = 0.2;
-var PAUSED = true;
-var MUTE = false;
 
 var shells = []; 
 var stars  = [];
-var sounds = [];
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background(0);
-    strokeWeight(1);
-    colorMode(HSB);
-    for (let i = 0; i < 3; i++) {
-        sounds.push(loadSound('sounds/explosion' + i + '.mp3'));
-    }
 }
-
-/* 
-From p5.js docs: Called directly after setup(), the draw() function continuously 
-executes the lines of code contained inside its block until the program is 
-stopped or noLoop() is called. 
-*/
 function draw() {
-    translate(width / 2, height);
-    background('rgba(0, 0, 0, 0.2)');
-
-    /* Remove the exploded shells and burnt out stars */
     shells = shells.filter(shell => !shell.exploded);
     stars = stars.filter(star => star.brt > 0);
 
-    /* Draw the shells and stars */
     for (let shell of shells) 
         shell.draw();
     for (let star of stars) 
         star.draw();
-    
-    /* Generate new shell with small probability */
-    if (random() < 0.03) {
-        let s = new Shell();
-        shells.push(s);     
-    }
 }
 
 class Shell {
@@ -137,10 +112,6 @@ class Shell {
             this.drawStars(200, 0, 8, 3, 8, 'writer');
         }
         this.exploded = true;
-        if (!MUTE) {
-            let randIndex = floor(random(0, sounds.length));
-            sounds[randIndex].play();
-        }        
     }
 }
 
@@ -197,27 +168,6 @@ function touchStarted() {
     let s = new Shell(position, speed);
     s.explode();
     return false;
-}
-
-function keyPressed() {
-    if (keyCode == 32) { /* Space bar */
-        if (PAUSED) {
-            PAUSED = false; 
-            /* Draw a pause symbol in top right corner */
-            strokeWeight(1);
-            fill(255);
-            rect(width/2-30, -height+20, 10, 30);
-            rect(width/2-50, -height+20, 10, 30);
-            noLoop();
-        } else { 
-            PAUSED = true;
-            loop();
-        }
-        return false;
-    }
-    if (keyCode == 83) { /* 's' for sound effects */
-        MUTE = !MUTE;
-    }
 }
 
 function windowResized() {
